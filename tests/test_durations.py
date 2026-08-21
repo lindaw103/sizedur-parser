@@ -44,9 +44,13 @@ class TestParseDuration:
         with pytest.raises(DurationParseError):
             parse_duration("1h!")
 
-    def test_rejects_whitespace_between_chunks(self):
+    def test_allows_whitespace_between_chunks(self):
+        assert parse_duration("1h 30m") == 5400.0
+        assert parse_duration("1d  2h   3m") == 86400 + 2 * 3600 + 3 * 60
+
+    def test_rejects_whitespace_inside_a_chunk(self):
         with pytest.raises(DurationParseError):
-            parse_duration("1h 30m")
+            parse_duration("1 h30m")
 
     def test_rejects_negative(self):
         with pytest.raises(DurationParseError):

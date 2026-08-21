@@ -30,8 +30,10 @@ class DurationParseError(ValueError):
 def parse_duration(text: str) -> float:
     """Parse a compound duration string into a number of seconds.
 
-    Accepts one or more "<number><unit>" chunks concatenated together,
-    e.g. "1h30m", "2.5s", "500ms". Units: d, h, m, s, ms, us, ns.
+    Accepts one or more "<number><unit>" chunks, e.g. "1h30m", "2.5s",
+    "500ms". Chunks may optionally be separated by whitespace ("1h 30m"
+    parses the same as "1h30m"), but a number and its unit must be
+    adjacent. Units: d, h, m, s, ms, us, ns.
     """
     if not isinstance(text, str):
         raise DurationParseError(f"expected a string, got {type(text).__name__}")
@@ -54,6 +56,12 @@ def parse_duration(text: str) -> float:
         total += float(number) * _UNIT_SECONDS_MAP[unit]
         pos = match.end()
         matched_any = True
+
+        # Whitespace between chunks is allowed but not required; the
+        # chunk regex itself has no room for it since a bare "30 m"
+        # would be ambiguous with a following "m"-only chunk.
+        while pos < len(stripped) and stripped[pos].isspace():
+            pos += 1
 
     if not matched_any:
         raise DurationParseError(f"not a valid duration: {text!r}")
