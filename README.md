@@ -49,7 +49,8 @@ sizedur.sizes.SizeParseError: unknown unit 'furlongs' in '12 furlongs'
 
 Early. The parsing grammar is deliberately simple (no whitespace
 between compound duration chunks, no negative sizes) and will get
-stricter test coverage and edge-case handling over time.
+stricter edge-case handling over time. Covered by a pytest suite
+(`pip install -e .[test]` then `pytest`).
 
 ## License
 
