@@ -40,6 +40,23 @@ subclass `ValueError`) instead of silently returning something wrong:
 sizedur.sizes.SizeParseError: unknown unit 'furlongs' in '12 furlongs'
 ```
 
+## CLI
+
+Installing the package (`pip install -e .`) also adds a `sizedur`
+command for one-off conversions. The direction is inferred from the
+input: a plain number gets formatted, anything else gets parsed.
+
+```
+$ sizedur size 1.5GiB
+1610612736
+$ sizedur size 1610612736 --binary
+1.50GiB
+$ sizedur duration 1h30m
+5400.0
+$ sizedur duration 5400
+1h30m
+```
+
 ## Supported units
 
 - Sizes: `B`, `KB`/`MB`/`GB`/`TB`/`PB`/`EB` (decimal, x1000), `KiB`/`MiB`/`GiB`/`TiB`/`PiB`/`EiB` (binary, x1024). Case-insensitive.

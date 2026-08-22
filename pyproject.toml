@@ -14,5 +14,8 @@ authors = [{ name = "lindaw103" }]
 [project.optional-dependencies]
 test = ["pytest>=7"]
 
+[project.scripts]
+sizedur = "sizedur.cli:main"
+
 [tool.setuptools.packages.find]
 include = ["sizedur*"]
