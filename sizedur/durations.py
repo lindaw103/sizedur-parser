@@ -69,12 +69,29 @@ def parse_duration(text: str) -> float:
     return total
 
 
+def _format_subsecond(seconds: float, precision: int) -> str | None:
+    """Format a sub-second remainder using the largest unit that fits.
+
+    Returns None if the remainder is too small for any sub-second unit
+    to register (i.e. under a nanosecond), so callers can treat it as
+    negligible float noise instead of printing a bogus "0ns".
+    """
+    for unit, size in _UNIT_SECONDS[4:]:
+        value = seconds / size
+        if value >= 1:
+            return f"{value:.{precision}f}{unit}"
+    return None
+
+
 def format_duration(total_seconds: float, precision: int = 0) -> str:
     """Format a number of seconds as a compound duration string.
 
     Drops units that would contribute zero, so 90 seconds formats as
     "1m30s" rather than "0d0h1m30s". Sub-second totals fall back to
-    the largest sub-second unit so short durations stay readable.
+    the largest sub-second unit so short durations stay readable, and
+    a sub-second remainder on a longer duration is appended the same
+    way (5.5 seconds formats as "5s500ms" rather than truncating to
+    "5s").
     """
     if total_seconds < 0:
         raise ValueError("duration cannot be negative")
@@ -83,11 +100,8 @@ def format_duration(total_seconds: float, precision: int = 0) -> str:
         return "0s"
 
     if total_seconds < 1:
-        for unit, size in _UNIT_SECONDS[4:]:
-            value = total_seconds / size
-            if value >= 1:
-                return f"{value:.{precision}f}{unit}"
-        return f"{total_seconds}s"
+        subsecond = _format_subsecond(total_seconds, precision)
+        return subsecond if subsecond is not None else f"{total_seconds}s"
 
     remaining = total_seconds
     parts = []
@@ -95,5 +109,10 @@ def format_duration(total_seconds: float, precision: int = 0) -> str:
         count, remaining = divmod(remaining, size)
         if count:
             parts.append(f"{int(count)}{unit}")
+
+    if remaining > 0:
+        subsecond = _format_subsecond(remaining, precision)
+        if subsecond is not None:
+            parts.append(subsecond)
 
     return "".join(parts) if parts else "0s"

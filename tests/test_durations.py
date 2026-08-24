@@ -77,6 +77,18 @@ class TestFormatDuration:
     def test_precision_on_sub_second(self):
         assert format_duration(0.5, precision=2) == "500.00ms"
 
+    def test_sub_second_remainder_on_longer_duration(self):
+        assert format_duration(1.5) == "1s500ms"
+        assert format_duration(90.5) == "1m30s500ms"
+
+    def test_precision_on_sub_second_remainder(self):
+        assert format_duration(1.25, precision=2) == "1s250.00ms"
+
+    def test_ignores_negligible_float_noise(self):
+        # 0.1h in seconds picks up float error far below 1ns; that
+        # noise should be dropped rather than printed as a bogus unit.
+        assert format_duration(0.1 * 3600) == "6m"
+
     def test_rejects_negative(self):
         with pytest.raises(ValueError):
             format_duration(-1)
