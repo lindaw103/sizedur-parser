@@ -9,6 +9,7 @@ useful without a separate --parse/--format flag to remember.
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 
 from .durations import DurationParseError, format_duration, parse_duration
@@ -17,10 +18,13 @@ from .sizes import SizeParseError, format_size, parse_size
 
 def _is_plain_number(value: str) -> bool:
     try:
-        float(value)
+        parsed = float(value)
     except ValueError:
         return False
-    return True
+    # inf/nan parse as floats but aren't real sizes or durations; treat
+    # them as unparseable strings so they hit the normal parse-error path
+    # instead of blowing up format_size/format_duration with int(inf).
+    return math.isfinite(parsed)
 
 
 def _run_size(value: str, binary: bool, precision: int) -> str:

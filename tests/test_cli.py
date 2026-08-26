@@ -28,6 +28,18 @@ class TestSizeCommand:
         assert main(["size", "-5"]) == 1
         assert "negative" in capsys.readouterr().err
 
+    def test_infinity_reports_parse_error_instead_of_crashing(self, capsys):
+        assert main(["size", "inf"]) == 1
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err.startswith("sizedur:")
+
+    def test_nan_reports_parse_error_instead_of_crashing(self, capsys):
+        assert main(["size", "nan"]) == 1
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err.startswith("sizedur:")
+
 
 class TestDurationCommand:
     def test_parse_string(self, capsys):
@@ -44,6 +56,12 @@ class TestDurationCommand:
 
     def test_invalid_input_reports_error_and_exit_code(self, capsys):
         assert main(["duration", "1x"]) == 1
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err.startswith("sizedur:")
+
+    def test_infinity_reports_parse_error_instead_of_crashing(self, capsys):
+        assert main(["duration", "inf"]) == 1
         captured = capsys.readouterr()
         assert captured.out == ""
         assert captured.err.startswith("sizedur:")
