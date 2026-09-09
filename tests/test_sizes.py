@@ -69,6 +69,14 @@ class TestFormatSize:
         with pytest.raises(ValueError):
             format_size(-1)
 
+    def test_rejects_infinity(self):
+        with pytest.raises(ValueError):
+            format_size(float("inf"))
+
+    def test_rejects_nan(self):
+        with pytest.raises(ValueError):
+            format_size(float("nan"))
+
     def test_round_trips_through_parse(self):
         for text in ["1.50KB", "2.00MB", "1.50GiB"]:
             assert format_size(parse_size(text), binary="i" in text) == text

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 
 # Decimal units are powers of 1000, binary units are powers of 1024.
@@ -68,6 +69,11 @@ def format_size(num_bytes: int, binary: bool = False, precision: int = 2) -> str
     With binary=True uses binary units (KiB = 1024 bytes), matching what
     tools like `du -h` typically show.
     """
+    # inf/nan pass the "< 0" check below (comparisons against nan are
+    # always false) and would otherwise fall through to int(inf) or a
+    # silently bogus "nanEB", instead of the clean error callers expect.
+    if not math.isfinite(num_bytes):
+        raise ValueError(f"byte count must be finite, got {num_bytes!r}")
     if num_bytes < 0:
         raise ValueError("byte count cannot be negative")
 

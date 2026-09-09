@@ -93,6 +93,14 @@ class TestFormatDuration:
         with pytest.raises(ValueError):
             format_duration(-1)
 
+    def test_rejects_infinity(self):
+        with pytest.raises(ValueError):
+            format_duration(float("inf"))
+
+    def test_rejects_nan(self):
+        with pytest.raises(ValueError):
+            format_duration(float("nan"))
+
     def test_round_trips_through_parse(self):
         for text in ["1d5s", "1h30m", "1m30s", "30s"]:
             assert format_duration(parse_duration(text)) == text

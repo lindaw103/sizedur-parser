@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 
 # Ordered largest to smallest so parsing and formatting can both walk
@@ -93,6 +94,11 @@ def format_duration(total_seconds: float, precision: int = 0) -> str:
     way (5.5 seconds formats as "5s500ms" rather than truncating to
     "5s").
     """
+    # inf/nan pass the "< 0" check below (comparisons against nan are
+    # always false) and would otherwise blow up divmod() with an
+    # OverflowError instead of the clean error callers expect.
+    if not math.isfinite(total_seconds):
+        raise ValueError(f"duration must be finite, got {total_seconds!r}")
     if total_seconds < 0:
         raise ValueError("duration cannot be negative")
 
