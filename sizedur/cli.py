@@ -12,6 +12,7 @@ import argparse
 import math
 import sys
 
+from . import __version__
 from .durations import DurationParseError, format_duration, parse_duration
 from .sizes import SizeParseError, format_size, parse_size
 
@@ -43,6 +44,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sizedur",
         description="Convert between human-readable size/duration strings and raw numbers.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     subparsers = parser.add_subparsers(dest="kind", required=True)
 

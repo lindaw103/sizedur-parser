@@ -55,6 +55,8 @@ $ sizedur duration 1h30m
 5400.0
 $ sizedur duration 5400
 1h30m
+$ sizedur --version
+sizedur 0.1.0
 ```
 
 ## Supported units

@@ -1,4 +1,15 @@
+import pytest
+
+import sizedur
 from sizedur.cli import main
+
+
+class TestVersionFlag:
+    def test_prints_version_and_exits_zero(self, capsys):
+        with pytest.raises(SystemExit) as excinfo:
+            main(["--version"])
+        assert excinfo.value.code == 0
+        assert capsys.readouterr().out.strip() == f"sizedur {sizedur.__version__}"
 
 
 class TestSizeCommand:
